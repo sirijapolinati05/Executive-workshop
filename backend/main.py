@@ -9,8 +9,15 @@ from typing import Optional, Tuple
 
 from dotenv import load_dotenv
 
-# Load .env from the project root (one level up from backend/)
-load_dotenv(dotenv_path=os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.env')))
+# Load .env safely
+try:
+    env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.env'))
+    if os.path.exists(env_path):
+        load_dotenv(dotenv_path=env_path)
+    else:
+        load_dotenv() # Fallback to default
+except Exception as e:
+    print(f"[startup] Warning: Could not load .env file: {e}")
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
