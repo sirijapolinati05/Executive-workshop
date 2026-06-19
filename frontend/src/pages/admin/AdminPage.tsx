@@ -3,6 +3,8 @@ import { Shield, Lock, Database, FileSpreadsheet, Search, Check, X, Phone, Mail,
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 
+const DEFAULT_BACKEND_URL = 'https://executive-workshop-backend.vercel.app';
+
 interface Applicant {
   id: number;
   timestamp: string;
@@ -107,7 +109,7 @@ export default function AdminPage() {
       `;
 
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL;
       const res = await fetch(`${backendUrl}/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -122,7 +124,7 @@ export default function AdminPage() {
       }
     } catch (err) {
       console.error('Failed to reach FastAPI email server:', err);
-      alert(`⚠️ Could not reach email server at ${import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000'}. Is the FastAPI backend running?`);
+      alert(`⚠️ Could not reach email server at ${import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL}. Is the FastAPI backend running?`);
     }
   };
 
@@ -138,7 +140,7 @@ export default function AdminPage() {
       </div>
     `;
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL;
       const res = await fetch(`${backendUrl}/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

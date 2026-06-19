@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Info, User, Phone, Mail, Building2, Briefcase, Globe, Calendar, ArrowRight, ArrowLeft, Send, Check } from 'lucide-react';
 
+const DEFAULT_BACKEND_URL = 'https://executive-workshop-backend.vercel.app';
+
 interface FormData {
   fullName: string;
   mobileNumber: string;
@@ -154,7 +156,7 @@ export default function LandingPage() {
       // Notify admin via FastAPI Gmail SMTP backend
       try {
         const adminEmail = import.meta.env.VITE_ADMIN_NOTIFICATION_EMAIL || 'krishnakishore.k777@gmail.com';
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000';
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL;
         const res = await fetch(`${backendUrl}/send-email`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -190,7 +192,7 @@ export default function LandingPage() {
 
       // Send acknowledgement email to the applicant
       try {
-        const backendUrl2 = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000';
+        const backendUrl2 = import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL;
         const res = await fetch(`${backendUrl2}/send-email`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
