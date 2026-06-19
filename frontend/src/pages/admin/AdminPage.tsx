@@ -122,7 +122,7 @@ export default function AdminPage() {
       }
     } catch (err) {
       console.error('Failed to reach FastAPI email server:', err);
-      alert('⚠️ Could not reach email server at http://127.0.0.1:8000. Is the FastAPI backend running?');
+      alert(`⚠️ Could not reach email server at ${import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000'}. Is the FastAPI backend running?`);
     }
   };
 

@@ -154,7 +154,8 @@ export default function LandingPage() {
       // Notify admin via FastAPI Gmail SMTP backend
       try {
         const adminEmail = import.meta.env.VITE_ADMIN_NOTIFICATION_EMAIL || 'krishnakishore.k777@gmail.com';
-        const res = await fetch('http://127.0.0.1:8000/send-email', {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000';
+        const res = await fetch(`${backendUrl}/send-email`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -189,7 +190,8 @@ export default function LandingPage() {
 
       // Send acknowledgement email to the applicant
       try {
-        const res = await fetch('http://127.0.0.1:8000/send-email', {
+        const backendUrl2 = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000';
+        const res = await fetch(`${backendUrl2}/send-email`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
