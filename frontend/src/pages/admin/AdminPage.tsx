@@ -61,7 +61,7 @@ export default function AdminPage() {
         .from('applicants')
         .select('*')
         .order('created_at', { ascending: false });
-        
+
       if (!error && data) {
         setApplicants(data.map(mapApiToApplicant));
       }
@@ -156,7 +156,7 @@ export default function AdminPage() {
         .from('applicants')
         .update({ status } as any)
         .eq('id', id);
-        
+
       if (error) {
         console.error('Supabase Update Error:', error);
         alert('Failed to update status: ' + error.message);
@@ -170,19 +170,19 @@ export default function AdminPage() {
     }
   };
 
-    const handleApprove = async (applicant: Applicant) => {
-      await updateStatus(applicant.id, 'Approved');
-      await sendStatusEmail(applicant, 'Approved');
-      // Notify admin about the approval action
-      await sendAdminNotification(applicant, 'Approved');
-    };
+  const handleApprove = async (applicant: Applicant) => {
+    await updateStatus(applicant.id, 'Approved');
+    await sendStatusEmail(applicant, 'Approved');
+    // Notify admin about the approval action
+    await sendAdminNotification(applicant, 'Approved');
+  };
 
-    const handleReject = async (applicant: Applicant) => {
-      await updateStatus(applicant.id, 'Rejected');
-      await sendStatusEmail(applicant, 'Rejected');
-      // Notify admin about the rejection action
-      await sendAdminNotification(applicant, 'Rejected');
-    };
+  const handleReject = async (applicant: Applicant) => {
+    await updateStatus(applicant.id, 'Rejected');
+    await sendStatusEmail(applicant, 'Rejected');
+    // Notify admin about the rejection action
+    await sendAdminNotification(applicant, 'Rejected');
+  };
 
   const handleDelete = async (id: number) => {
     try {
@@ -190,7 +190,7 @@ export default function AdminPage() {
         .from('applicants')
         .delete()
         .eq('id', id);
-        
+
       if (error) {
         console.error('Supabase Delete Error:', error);
         alert('Failed to delete: ' + error.message);
@@ -200,50 +200,6 @@ export default function AdminPage() {
     } catch (err) {
       console.error('Network Error:', err);
     }
-  };
-
-  const exportToCSV = () => {
-    if (applicants.length === 0) {
-      alert("No data to export");
-      return;
-    }
-
-    const headers = [
-      'ID', 'Timestamp', 'Name', 'Role', 'Organization', 'Sector', 
-      'Experience', 'Phone', 'Email', 'Challenging Decision', 
-      'Interests', 'Referral Source', 'Status'
-    ];
-
-    const escapeCsv = (field: any) => {
-      if (field === null || field === undefined) return '""';
-      const str = String(field);
-      if (str.includes(',') || str.includes('"') || str.includes('\\n')) {
-        return `"${str.replace(/"/g, '""')}"`;
-      }
-      return str;
-    };
-
-    const csvRows = [headers.join(',')];
-
-    applicants.forEach(a => {
-      const row = [
-        a.id, a.timestamp, a.name, a.role, a.organization, a.sector,
-        a.experience, a.phone, a.email, a.challengingDecision,
-        a.interests, a.referralSource, a.status
-      ];
-      csvRows.push(row.map(escapeCsv).join(','));
-    });
-
-    const csvContent = csvRows.join('\\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `executive_workshop_applicants_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   const filteredApplicants = applicants.filter((a) => {
@@ -334,10 +290,7 @@ export default function AdminPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button 
-                onClick={exportToCSV}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors"
-              >
+              <button className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors">
                 <FileSpreadsheet size={16} />
                 Export to Excel (CSV)
               </button>
@@ -445,15 +398,14 @@ export default function AdminPage() {
                       </td>
                       <td className="px-6 py-4 text-slate-300 text-sm max-w-[200px] truncate">{applicant.challengingDecision}</td>
                       <td className="px-6 py-4">
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                          applicant.status === 'Approved'
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${applicant.status === 'Approved'
                             ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                             : applicant.status === 'Pending Review'
-                            ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                            : applicant.status === 'Waitlisted'
-                            ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                            : 'bg-red-500/20 text-red-400 border border-red-500/30'
-                        }`}>
+                              ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                              : applicant.status === 'Waitlisted'
+                                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                                : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                          }`}>
                           {applicant.status}
                         </span>
                       </td>
