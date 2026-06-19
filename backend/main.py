@@ -135,7 +135,6 @@ def send_email(to: str, subject: str, html: str) -> tuple[bool, str]:
 
     return False, " | ".join(errors)
 
-
 # ── Routes ────────────────────────────────────────────────────────
 
 @app.get("/")
@@ -147,14 +146,12 @@ def health():
         "smtp_configured": bool(GMAIL_USER and GMAIL_APP_PASSWORD),
     }
 
-
 @app.post("/send-email")
 async def api_send_email(payload: EmailPayload):
     ok, via_or_err = send_email(payload.to, payload.subject, payload.html)
     if not ok:
         raise HTTPException(status_code=500, detail=f"All providers failed: {via_or_err}")
     return {"message": f"Email sent via {via_or_err}", "to": payload.to}
-
 
 @app.post("/admin-decision")
 async def api_admin_decision(payload: AdminDecisionPayload):
@@ -188,7 +185,7 @@ async def api_admin_decision(payload: AdminDecisionPayload):
         raise HTTPException(status_code=500, detail=f"All providers failed: {via_or_err}")
     return {"message": f"Decision email sent via {via_or_err}", "decision": payload.decision}
 
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+
