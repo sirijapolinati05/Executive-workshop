@@ -137,7 +137,8 @@ export default function AdminPage() {
       </div>
     `;
     try {
-      const res = await fetch('http://127.0.0.1:8000/send-email', {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      const res = await fetch(`${backendUrl}/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ to: adminEmail, subject, html }),
@@ -150,9 +151,9 @@ export default function AdminPage() {
 
   const updateStatus = async (id: number, status: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('applicants')
-        .update({ status })
+        .update({ status } as any)
         .eq('id', id);
         
       if (error) {

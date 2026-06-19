@@ -132,22 +132,22 @@ export default function LandingPage() {
     setIsSubmitting(true);
     setSubmitError('');
     try {
-      const { data, error: supabaseError } = await supabase
-        .from('applicants')
-        .insert([
-          {
-            full_name: formData.fullName,
-            mobile_number: formData.mobileNumber,
-            email: formData.email,
-            organization: formData.organization,
-            current_role: formData.currentRole,
-            industry: formData.industry,
-            experience: formData.experience,
-            interests: formData.interests,
-            challenging_decision: formData.challengingDecision,
-            referral_source: formData.referralSource,
-          },
-        ]);
+      const { error: supabaseError } = await supabase
+      .from('applicants')
+      .insert([
+        {
+          full_name: formData.fullName,
+          mobile_number: formData.mobileNumber,
+          email: formData.email,
+          organization: formData.organization,
+          current_role: formData.currentRole,
+          industry: formData.industry,
+          experience: formData.experience,
+          interests: formData.interests,
+          challenging_decision: formData.challengingDecision,
+          referral_source: formData.referralSource,
+        },
+      ] as any);
       if (supabaseError) throw supabaseError;
 
       // Notify admin via FastAPI Gmail SMTP backend
