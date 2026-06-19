@@ -21,7 +21,7 @@ except Exception as e:
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 from enum import Enum
 
 # ── Config ───────────────────────────────────────────────────────
@@ -48,7 +48,7 @@ app.add_middleware(
 
 # ── Schemas ───────────────────────────────────────────────────────
 class EmailPayload(BaseModel):
-    to: EmailStr
+    to: str
     subject: str = "Notification from Executive Workshop"
     html: str = "<p>No content provided.</p>"
     admin: Optional[bool] = False
@@ -58,7 +58,7 @@ class Decision(str, Enum):
     rejected = "rejected"
 
 class AdminDecisionPayload(BaseModel):
-    to: EmailStr
+    to: str
     decision: Decision
 
 # ── Senders ───────────────────────────────────────────────────────
