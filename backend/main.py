@@ -5,7 +5,7 @@ import urllib.request
 import urllib.error
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from typing import Optional
+from typing import Optional, Tuple
 
 from dotenv import load_dotenv
 
@@ -56,7 +56,7 @@ class AdminDecisionPayload(BaseModel):
 
 # ── Senders ───────────────────────────────────────────────────────
 
-def send_via_resend(to: str, subject: str, html: str) -> tuple[bool, str | None]:
+def send_via_resend(to: str, subject: str, html: str) -> Tuple[bool, Optional[str]]:
     """Send email using Resend REST API (no extra packages needed)."""
     if not RESEND_API_KEY or RESEND_API_KEY.startswith('re_PASTE'):
         return False, "Resend API key not configured"
@@ -90,7 +90,7 @@ def send_via_resend(to: str, subject: str, html: str) -> tuple[bool, str | None]
         return False, str(exc)
 
 
-def send_via_smtp(to: str, subject: str, html: str) -> tuple[bool, str | None]:
+def send_via_smtp(to: str, subject: str, html: str) -> Tuple[bool, Optional[str]]:
     """Send email using Gmail SMTP over SSL (port 465)."""
     if not GMAIL_USER or not GMAIL_APP_PASSWORD:
         return False, "Gmail credentials not configured"
@@ -112,7 +112,7 @@ def send_via_smtp(to: str, subject: str, html: str) -> tuple[bool, str | None]:
         return False, str(exc)
 
 
-def send_email(to: str, subject: str, html: str) -> tuple[bool, str]:
+def send_email(to: str, subject: str, html: str) -> Tuple[bool, str]:
     """
     Route email based on EMAIL_PROVIDER:
       resend → Resend only
@@ -188,4 +188,3 @@ async def api_admin_decision(payload: AdminDecisionPayload):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
-
