@@ -161,23 +161,19 @@ export default function LandingPage() {
             subject: `🆕 New Workshop Registration: ${formData.fullName} (${formData.organization})`,
             html: `
   <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:32px;background:#f9fafb;border-radius:12px;border:1px solid #e5e7eb;">
-    <h2 style="color:#1f2937;margin-bottom:4px;">📋 New Registration Submitted</h2>
-    <p style="color:#6b7280;font-size:13px;margin-top:0;">A new participant has filled the workshop registration form.</p>
-    <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0;"/>
+    <h2 style="color:#1f2937;margin-bottom:8px;">📋 New Workshop Registration</h2>
+    <p style="color:#6b7280;font-size:14px;margin:0 0 12px;">A new participant has submitted the registration form. Details are below:</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px;">
-      <tr><td style="padding:8px 0;color:#6b7280;width:40%;">Full Name</td><td style="padding:8px 0;color:#111827;font-weight:600;">${formData.fullName}</td></tr>
-      <tr><td style="padding:8px 0;color:#6b7280;">Email</td><td style="padding:8px 0;color:#111827;">${formData.email}</td></tr>
-      <tr><td style="padding:8px 0;color:#6b7280;">Mobile</td><td style="padding:8px 0;color:#111827;">${formData.mobileNumber}</td></tr>
-      <tr><td style="padding:8px 0;color:#6b7280;">Organization</td><td style="padding:8px 0;color:#111827;">${formData.organization}</td></tr>
-      <tr><td style="padding:8px 0;color:#6b7280;">Role</td><td style="padding:8px 0;color:#111827;">${formData.currentRole}</td></tr>
-      <tr><td style="padding:8px 0;color:#6b7280;">Industry</td><td style="padding:8px 0;color:#111827;">${formData.industry}</td></tr>
-      <tr><td style="padding:8px 0;color:#6b7280;">Experience</td><td style="padding:8px 0;color:#111827;">${formData.experience}</td></tr>
-      <tr><td style="padding:8px 0;color:#6b7280;">Referral</td><td style="padding:8px 0;color:#111827;">${formData.referralSource}</td></tr>
+      <tr><td style="padding:6px;color:#6b7280;width:35%;">Full Name</td><td style="padding:6px;color:#111827;font-weight:600;">${formData.fullName}</td></tr>
+      <tr><td style="padding:6px;color:#6b7280;">Email</td><td style="padding:6px;color:#111827;">${formData.email}</td></tr>
+      <tr><td style="padding:6px;color:#6b7280;">Mobile</td><td style="padding:6px;color:#111827;">${formData.mobileNumber}</td></tr>
+      <tr><td style="padding:6px;color:#6b7280;">Organization</td><td style="padding:6px;color:#111827;">${formData.organization}</td></tr>
+      <tr><td style="padding:6px;color:#6b7280;">Role</td><td style="padding:6px;color:#111827;">${formData.currentRole}</td></tr>
+      <tr><td style="padding:6px;color:#6b7280;">Industry</td><td style="padding:6px;color:#111827;">${formData.industry}</td></tr>
+      <tr><td style="padding:6px;color:#6b7280;">Experience</td><td style="padding:6px;color:#111827;">${formData.experience}</td></tr>
+      <tr><td style="padding:6px;color:#6b7280;">Referral</td><td style="padding:6px;color:#111827;">${formData.referralSource}</td></tr>
     </table>
-    <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0;"/>
-    <p style="color:#374151;font-size:13px;"><strong>Interests:</strong><br/>${formData.interests}</p>
-    <p style="color:#374151;font-size:13px;"><strong>Challenging Decision:</strong><br/>${formData.challengingDecision}</p>
-    <p style="color:#6b7280;font-size:12px;">Log in to the Admin Panel to approve or reject this applicant.</p>
+    <p style="color:#374151;font-size:13px;margin-top:12px;">Log in to the admin panel to <strong>approve</strong> or <strong>reject</strong> this applicant. The applicant will be notified automatically of the decision.</p>
   </div>`,
           }),
         });
@@ -206,7 +202,6 @@ export default function LandingPage() {
                 <p style="color:#374151;font-size:15px;">Dear <strong>${formData.fullName}</strong>,</p>
                 <p style="color:#374151;font-size:15px;line-height:1.7;">Your application has been received and is currently <strong style="color:#d97706;">under review</strong>.</p>
                 <p style="color:#374151;font-size:15px;line-height:1.7;">We will notify you via email once your seat is <strong>approved</strong> or if it is <strong>rejected</strong>.</p>
-                  an update on your application. Please check your inbox (and spam folder) over the next 24–48 hours.
                 </p>
 
                 <div style="margin:28px 0;padding:20px 24px;background:#fff;border-radius:8px;border:1px solid #e5e7eb;">
