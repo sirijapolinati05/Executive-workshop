@@ -107,7 +107,8 @@ export default function AdminPage() {
       `;
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/send-email', {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      const res = await fetch(`${backendUrl}/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ to: applicant.email, subject, html }),

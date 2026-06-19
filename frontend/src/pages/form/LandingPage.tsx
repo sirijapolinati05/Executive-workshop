@@ -146,6 +146,7 @@ export default function LandingPage() {
           interests: formData.interests,
           challenging_decision: formData.challengingDecision,
           referral_source: formData.referralSource,
+          status: 'Pending Review',
         },
       ] as any);
       if (supabaseError) throw supabaseError;
