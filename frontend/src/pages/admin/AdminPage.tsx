@@ -202,6 +202,50 @@ export default function AdminPage() {
     }
   };
 
+  const exportToCSV = () => {
+    if (applicants.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    const headers = [
+      'ID', 'Timestamp', 'Name', 'Role', 'Organization', 'Sector', 
+      'Experience', 'Phone', 'Email', 'Challenging Decision', 
+      'Interests', 'Referral Source', 'Status'
+    ];
+
+    const escapeCsv = (field: any) => {
+      if (field === null || field === undefined) return '""';
+      const str = String(field);
+      if (str.includes(',') || str.includes('"') || str.includes('\\n')) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+
+    const csvRows = [headers.join(',')];
+
+    applicants.forEach(a => {
+      const row = [
+        a.id, a.timestamp, a.name, a.role, a.organization, a.sector,
+        a.experience, a.phone, a.email, a.challengingDecision,
+        a.interests, a.referralSource, a.status
+      ];
+      csvRows.push(row.map(escapeCsv).join(','));
+    });
+
+    const csvContent = csvRows.join('\\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `executive_workshop_applicants_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const filteredApplicants = applicants.filter((a) => {
     const matchesSearch =
       a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -290,7 +334,10 @@ export default function AdminPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors">
+              <button 
+                onClick={exportToCSV}
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors"
+              >
                 <FileSpreadsheet size={16} />
                 Export to Excel (CSV)
               </button>
