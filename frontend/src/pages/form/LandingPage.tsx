@@ -509,9 +509,9 @@ export default function LandingPage() {
                               onBlur={() => setFocusedField(null)}
                               className={selectClass('currentRole')}
                             >
-                              <option value="" disabled>Select your current role</option>
+                              <option value="" disabled className="text-black">Select your current role</option>
                               {roleOptions.map((role) => (
-                                <option key={role} value={role}>{role}</option>
+                                <option key={role} value={role} className="text-black">{role}</option>
                               ))}
                             </select>
                           </div>
@@ -557,9 +557,9 @@ export default function LandingPage() {
                               onBlur={() => setFocusedField(null)}
                               className={selectClass('experience')}
                             >
-                              <option value="" disabled>Select experience range</option>
+                              <option value="" disabled className="text-black">Select experience range</option>
                               {experienceOptions.map((exp) => (
-                                <option key={exp} value={exp}>{exp}</option>
+                                <option key={exp} value={exp} className="text-black">{exp}</option>
                               ))}
                             </select>
                           </div>
