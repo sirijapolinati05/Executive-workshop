@@ -33,7 +33,7 @@ app = FastAPI(title="Executive Workshop Email Service")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://executive-workshop.vercel.app", "https://executive-workshop-backend.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
