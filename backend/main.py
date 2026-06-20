@@ -205,7 +205,7 @@ async def api_admin_decision(payload: AdminDecisionPayload):
     if payload.decision == Decision.approved:
         subject = "Your Registration is Confirmed"
         import os
-        scanner_path = os.path.join(os.path.dirname(__file__), "../frontend/src/assets/scanner.jpeg")
+        scanner_path = os.path.join(os.path.dirname(__file__), "scanner.jpeg")
 
         applicant_name = payload.name if payload.name else "Participant"
 
