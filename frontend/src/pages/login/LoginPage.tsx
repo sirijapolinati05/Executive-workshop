@@ -41,19 +41,29 @@ export default function LoginPage() {
             throw new Error('Passwords do not match');
           }
           
-          // Custom Sign Up: bypass Supabase auth and go directly to form
+          // Insert into custom users table with explicit ID
+          const newId = crypto.randomUUID();
+          const { error: signUpError } = await supabase
+            .from('users')
+            .insert([{ id: newId, email, password }]);
+            
+          if (signUpError) {
+            throw new Error(signUpError.message || 'Failed to create user. Make sure a "users" table exists in Supabase with email and password columns.');
+          }
+          
           localStorage.setItem('userEmail', email);
           navigate('/form?first=true');
         } else {
-          // Custom Sign In: check if email is in applicants table
-          const { data, error: fetchError } = await supabase
-            .from('applicants')
-            .select('email')
+          // Check credentials in custom users table
+          const { data, error: signInError } = await supabase
+            .from('users')
+            .select('email, password')
             .eq('email', email)
+            .eq('password', password)
             .single();
             
-          if (fetchError || !data) {
-            throw new Error('Invalid credentials or user not found. Please sign up if you do not have an account.');
+          if (signInError || !data) {
+            throw new Error('Invalid email or password');
           }
           
           localStorage.setItem('userEmail', email);

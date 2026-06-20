@@ -131,7 +131,7 @@ export default function AdminPage() {
 
   // Notify admin when a decision is made
   const sendAdminNotification = async (applicant: Applicant, newStatus: 'Approved' | 'Rejected') => {
-    const adminEmail = import.meta.env.VITE_ADMIN_NOTIFICATION_EMAIL || 'sirijapolinati17@gmail.com';
+    const adminEmail = import.meta.env.VITE_ADMIN_NOTIFICATION_EMAIL || 'dt@darshathoughtways.com';
     const subject = `[Admin] Applicant ${newStatus}: ${applicant.name}`;
     const html = `
       <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:32px;background:#f9fafb;border-radius:12px;">

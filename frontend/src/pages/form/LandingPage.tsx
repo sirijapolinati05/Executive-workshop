@@ -156,7 +156,7 @@ export default function LandingPage() {
 
       // Notify admin via FastAPI Gmail SMTP backend
       try {
-        const adminEmail = import.meta.env.VITE_ADMIN_NOTIFICATION_EMAIL || 'krishnakishore.k777@gmail.com';
+        const adminEmail = import.meta.env.VITE_ADMIN_NOTIFICATION_EMAIL || 'dt@darshathoughtways.com';
         const backendUrl = import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL;
         const res = await fetch(`${backendUrl}/send-email`, {
           method: 'POST',

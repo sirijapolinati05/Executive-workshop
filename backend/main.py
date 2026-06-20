@@ -13,9 +13,9 @@ from dotenv import load_dotenv
 try:
     env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend', '.env'))
     if os.path.exists(env_path):
-        load_dotenv(dotenv_path=env_path)
+        load_dotenv(dotenv_path=env_path, override=True)
     else:
-        load_dotenv() # Fallback to default
+        load_dotenv(override=True) # Fallback to default
 except Exception as e:
     print(f"[startup] Warning: Could not load .env file: {e}")
 
@@ -28,12 +28,13 @@ from enum import Enum
 EMAIL_PROVIDER   = os.getenv('EMAIL_PROVIDER', 'both').lower()   # resend | smtp | both
 RESEND_API_KEY   = os.getenv('RESEND_API_KEY', '')
 RESEND_FROM      = os.getenv('RESEND_FROM', 'onboarding@resend.dev')
-GMAIL_USER       = os.getenv('GMAIL_USER', '')
-GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD', '')
+SMTP_HOST        = os.getenv('SMTP_HOST', 'smtp.zoho.in')
+SMTP_USER        = os.getenv('SMTP_USER', '')
+SMTP_PASSWORD    = os.getenv('SMTP_PASSWORD', '')
 
 print(f"[startup] EMAIL_PROVIDER={EMAIL_PROVIDER}")
 print(f"[startup] RESEND_API_KEY={'set' if RESEND_API_KEY and not RESEND_API_KEY.startswith('re_PASTE') else 'NOT SET'}")
-print(f"[startup] GMAIL_USER={GMAIL_USER or 'NOT SET'}")
+print(f"[startup] SMTP_USER={SMTP_USER or 'NOT SET'}")
 
 # ── App ───────────────────────────────────────────────────────────
 app = FastAPI(title="Executive Workshop Email Service")
@@ -85,6 +86,7 @@ def send_via_resend(to: str, subject: str, html: str) -> Tuple[bool, Optional[st
             headers={
                 "Authorization": f"Bearer {RESEND_API_KEY}",
                 "Content-Type": "application/json",
+                "User-Agent": "ExecutiveWorkshop/1.0",
             },
             method="POST",
         )
@@ -102,19 +104,19 @@ def send_via_resend(to: str, subject: str, html: str) -> Tuple[bool, Optional[st
 
 
 def send_via_smtp(to: str, subject: str, html: str) -> Tuple[bool, Optional[str]]:
-    """Send email using Gmail SMTP over SSL (port 465)."""
-    if not GMAIL_USER or not GMAIL_APP_PASSWORD:
-        return False, "Gmail credentials not configured"
+    """Send email using SMTP over SSL (port 465)."""
+    if not SMTP_USER or not SMTP_PASSWORD:
+        return False, "SMTP credentials not configured"
     try:
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
-        msg["From"]    = GMAIL_USER
+        msg["From"]    = f"Executive Workshop <{SMTP_USER}>"
         msg["To"]      = to
         msg.attach(MIMEText(html, "html"))
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
-            server.sendmail(GMAIL_USER, to, msg.as_string())
+        with smtplib.SMTP_SSL(SMTP_HOST, 465) as server:
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.sendmail(SMTP_USER, to, msg.as_string())
 
         print(f"[smtp] SUCCESS sent to {to}")
         return True, None

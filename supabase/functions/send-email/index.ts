@@ -26,7 +26,7 @@ serve(async (req) => {
     const apiKey = payload.admin ? Deno.env.get('ADMIN_RESEND_API_KEY') : Deno.env.get('USER_RESEND_API_KEY');
     const {
       from = 'onboarding@resend.dev',
-      to = Deno.env.get('ADMIN_NOTIFICATION_EMAIL') || 'sirijapolinati17@gmail.com',
+      to = Deno.env.get('ADMIN_NOTIFICATION_EMAIL') || 'dt@darshathoughtways.com',
       subject = 'Notification from Executive Workshop',
       html = '<p>No content provided.</p>',
     } = payload;
