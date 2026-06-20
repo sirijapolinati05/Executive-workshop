@@ -66,6 +66,7 @@ class Decision(str, Enum):
 class AdminDecisionPayload(BaseModel):
     to: str
     decision: Decision
+    name: Optional[str] = None
 
 # ── Senders ───────────────────────────────────────────────────────
 
@@ -206,9 +207,11 @@ async def api_admin_decision(payload: AdminDecisionPayload):
         import os
         scanner_path = os.path.join(os.path.dirname(__file__), "../frontend/src/assets/scanner.jpeg")
 
+        applicant_name = payload.name if payload.name else "Participant"
+
         html = f"""
         <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: auto; padding: 40px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; color: #1f2937;">
-            <p style="font-size: 16px; margin-bottom: 16px;">Dear Participant,</p>
+            <p style="font-size: 16px; margin-bottom: 16px;">Dear {applicant_name},</p>
             <p style="font-size: 16px; margin-bottom: 24px; line-height: 1.6;">Thank you for registering for <strong>The Leadership Blind-Spot: The Hidden Cost of Bad Decisions</strong>.</p>
             <p style="font-size: 16px; margin-bottom: 24px; line-height: 1.6;">We are pleased to confirm your participation in the workshop. Please find the payment details below:</p>
             

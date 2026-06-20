@@ -89,59 +89,30 @@ export default function AdminPage() {
   };
 
   const sendStatusEmail = async (applicant: Applicant, newStatus: 'Approved' | 'Rejected') => {
-    // Send email to applicant via FastAPI Gmail SMTP backend
-    const subject = newStatus === 'Approved' ? 'Your Registration is Confirmed' : 'Update on Your Workshop Application';
-    const html = newStatus === 'Approved'
-      ? `
-        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: auto; padding: 40px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; color: #1f2937;">
-          <p style="font-size: 16px; margin-bottom: 16px;">Dear ${applicant.name},</p>
-          <p style="font-size: 16px; margin-bottom: 24px; line-height: 1.6;">Thank you for registering for <strong>The Leadership Blind-Spot: The Hidden Cost of Bad Decisions</strong>.</p>
-          <p style="font-size: 16px; margin-bottom: 24px; line-height: 1.6;">We are pleased to confirm your participation in the workshop. Please find the payment details below:</p>
-          
-          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
-            <table style="width: 100%; font-size: 15px; border-collapse: collapse;">
-              <tr><td style="padding: 6px 0; color: #64748b; width: 40%;">Bank Name:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">Axis Bank</td></tr>
-              <tr><td style="padding: 6px 0; color: #64748b;">Account Name:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">Tejas Events</td></tr>
-              <tr><td style="padding: 6px 0; color: #64748b;">Account Number:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">923020047638503</td></tr>
-              <tr><td style="padding: 6px 0; color: #64748b;">IFSC Code:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">UTIB0000425</td></tr>
-              <tr><td style="padding: 6px 0; color: #64748b;">UPI ID:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;"></td></tr>
-              <tr><td style="padding: 6px 0; color: #64748b;">Program Fee:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">₹7,500 + 18% GST</td></tr>
-              <tr><td style="padding: 6px 0; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 6px;">Total amount:</td><td style="padding: 6px 0; font-weight: 700; color: #0f172a; border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 6px; font-size: 16px;">₹8850</td></tr>
-            </table>
-          </div>
-          
-          <p style="font-size: 16px; margin-bottom: 24px; line-height: 1.6;">Kindly complete the payment at your earliest convenience and share the payment confirmation with us once done.</p>
-          <p style="font-size: 16px; margin-bottom: 32px; line-height: 1.6;">We look forward to welcoming you to the session.</p>
-          
-          <p style="font-size: 16px; margin-bottom: 0; color: #475569;">Warm regards,<br/><strong style="color: #1f2937;">Rajesh</strong></p>
-        </div>
-      `
-      : `
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:32px;background:#f9fafb;border-radius:12px;">
-          <h2 style="color:#dc2626;">Update on Your Application</h2>
-          <p style="color:#374151;font-size:16px;">Dear ${applicant.name},</p>
-          <p style="color:#374151;">We regret to inform you that your seat request for the <strong>Executive Workshop</strong> has been <strong>rejected</strong> at this time.</p>
-          <p style="color:#6b7280;font-size:14px;">Thank you for your interest. We hope to see you in future sessions.</p>
-        </div>
-      `;
-
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL;
-      const res = await fetch(`${backendUrl}/send-email`, {
+      const decisionPayload = {
+        to: applicant.email,
+        decision: newStatus.toLowerCase(),
+        name: applicant.name
+      };
+      
+      const res = await fetch(`${backendUrl}/admin-decision`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ to: applicant.email, subject, html }),
+        body: JSON.stringify(decisionPayload),
       });
+      
       if (!res.ok) {
         const errText = await res.text();
-        console.error('FastAPI email error (user):', errText);
-        alert(`⚠️ Email to ${applicant.email} failed: ${errText}`);
+        console.error('FastAPI decision error:', errText);
+        alert(`⚠️ Decision update for ${applicant.email} failed: ${errText}`);
       } else {
-        console.log(`✅ Email sent to ${applicant.email} (${newStatus})`);
+        console.log(`✅ Backend processed decision for ${applicant.email} (${newStatus})`);
       }
     } catch (err) {
-      console.error('Failed to reach FastAPI email server:', err);
-      alert(`⚠️ Could not reach email server at ${import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL}. Is the FastAPI backend running?`);
+      console.error('Failed to reach FastAPI backend:', err);
+      alert(`⚠️ Could not reach backend at ${import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL}. Is the FastAPI backend running?`);
     }
   };
 
