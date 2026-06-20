@@ -45,7 +45,7 @@ export default function LoginPage() {
           const newId = crypto.randomUUID();
           const { error: signUpError } = await supabase
             .from('users')
-            .insert([{ id: newId, email, password }]);
+            .insert([{ id: newId, email, password }] as any);
             
           if (signUpError) {
             throw new Error(signUpError.message || 'Failed to create user. Make sure a "users" table exists in Supabase with email and password columns.');
