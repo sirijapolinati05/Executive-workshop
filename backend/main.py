@@ -156,7 +156,7 @@ def health():
         "status": "ok",
         "email_provider": EMAIL_PROVIDER,
         "resend_configured": bool(RESEND_API_KEY and not RESEND_API_KEY.startswith('re_PASTE')),
-        "smtp_configured": bool(GMAIL_USER and GMAIL_APP_PASSWORD),
+        "smtp_configured": bool(SMTP_USER and SMTP_PASSWORD),
     }
 
 @app.post("/send-email")
