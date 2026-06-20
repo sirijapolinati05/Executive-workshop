@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import { Mail, Lock, ArrowRight, Shield, User } from 'lucide-react';
+import logo from '../../assets/logo.jpeg';
 
 const ADMIN_ACCESS_CODE = import.meta.env.VITE_ADMIN_ACCESS_CODE || 'ADMIN2026';
 
@@ -90,9 +91,10 @@ export default function LoginPage() {
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
         </div>
-        <div className="text-center">
-          <div className="text-[var(--color-brand)] font-bold text-sm tracking-widest uppercase">Executive Workshop</div>
-          <div className="text-slate-500 text-xs mt-0.5">Curated Roundtables</div>
+        <div className="text-center mt-2">
+          <div className="flex justify-center">
+            <img src={logo} alt="Executive Workshop Logo" className="h-16 md:h-20 object-contain rounded-2xl" />
+          </div>
         </div>
       </div>
 

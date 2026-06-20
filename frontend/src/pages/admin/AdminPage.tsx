@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Shield, Lock, Database, FileSpreadsheet, Search, Check, X, Phone, Mail, RefreshCw, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
+import logo from '../../assets/logo.jpeg';
 
 const DEFAULT_BACKEND_URL = 'https://executive-workshop-backend.vercel.app';
 
@@ -219,7 +220,7 @@ export default function AdminPage() {
     const escapeCsv = (field: any) => {
       if (field === null || field === undefined) return '""';
       const str = String(field);
-      if (str.includes(',') || str.includes('"') || str.includes('\\n')) {
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
         return `"${str.replace(/"/g, '""')}"`;
       }
       return str;
@@ -236,7 +237,7 @@ export default function AdminPage() {
       csvRows.push(row.map(escapeCsv).join(','));
     });
 
-    const csvContent = csvRows.join('\\n');
+    const csvContent = '\uFEFF' + csvRows.join('\n'); // Added BOM for Excel
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -327,28 +328,27 @@ export default function AdminPage() {
       <div className="flex-1 px-4 md:px-8 py-10">
         <div className="max-w-7xl mx-auto">
           {/* Header Bar */}
-          <div className="bg-[#111827] border border-slate-800 rounded-2xl p-6 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Database size={28} className="text-[var(--color-brand)]" />
+          <div className="bg-gradient-to-r from-[#111827] to-[#1e293b] border border-slate-700/50 rounded-2xl p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl shadow-black/20">
+            <div className="flex items-center gap-4">
+              <img src={logo} alt="Executive Workshop Logo" className="h-12 object-contain rounded-xl" />
               <div>
-                <h1 className="text-lg font-bold text-white">Executive Registrar Hub</h1>
-                <p className="text-slate-500 text-xs">Total verified submissions and live seat projections</p>
+                <p className="text-slate-400 text-sm mt-0.5">Total verified submissions and live seat projections</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <button 
                 onClick={exportToCSV}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-sm font-semibold rounded-xl shadow-lg shadow-emerald-900/20 transition-all hover:scale-[1.02]"
               >
-                <FileSpreadsheet size={16} />
-                Export to Excel (CSV)
+                <FileSpreadsheet size={18} />
+                Export CSV
               </button>
               <button
                 onClick={fetchApplicants}
                 disabled={loading}
-                className="flex items-center gap-2 px-4 py-2 border border-slate-700 text-slate-300 hover:bg-slate-800 text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-2.5 bg-[#1e293b] hover:bg-[#334155] border border-slate-600 text-white text-sm font-semibold rounded-xl shadow-lg transition-all hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
               >
-                <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+                <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
                 Refresh
               </button>
               <button
@@ -357,22 +357,25 @@ export default function AdminPage() {
                   localStorage.removeItem('adminVerified');
                   navigate('/login');
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-sm font-semibold rounded-xl transition-all hover:scale-[1.02]"
               >
-                <Lock size={16} />
+                <Lock size={18} />
                 Logout
               </button>
             </div>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
             {stats.map((stat, i) => (
-              <div key={i} className="bg-[#111827] border border-slate-800 rounded-xl p-5">
-                <div className="text-slate-500 text-xs font-semibold tracking-wider uppercase mb-1">{stat.label}</div>
-                <div className="flex items-baseline gap-2">
-                  <span className={`text-3xl font-bold ${stat.color}`}>{stat.value}</span>
-                  <span className="text-slate-500 text-xs">{stat.sub}</span>
+              <div key={i} className="relative overflow-hidden bg-[#111827] border border-slate-700/50 rounded-2xl p-6 shadow-lg group hover:border-slate-600 transition-colors">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-white/10 transition-colors" />
+                <div className="relative z-10">
+                  <div className="text-slate-400 text-xs font-bold tracking-widest uppercase mb-2">{stat.label}</div>
+                  <div className="flex items-end gap-2">
+                    <span className={`text-4xl font-extrabold tracking-tight ${stat.color}`}>{stat.value}</span>
+                    <span className="text-slate-500 text-sm font-medium mb-1">{stat.sub}</span>
+                  </div>
                 </div>
               </div>
             ))}

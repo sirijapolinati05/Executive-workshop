@@ -124,7 +124,6 @@ export default function LandingPage() {
     const errors: Record<string, string> = {};
     if (!formData.interests.trim()) errors.interests = 'This field is required';
     if (!formData.challengingDecision.trim()) errors.challengingDecision = 'This field is required';
-    if (!formData.referralSource) errors.referralSource = 'Please select an option';
     if (!formData.agreeTerms) errors.agreeTerms = 'You must agree to continue';
     if (!formData.agreeFee) errors.agreeFee = 'You must agree to continue';
     setStep2Errors(errors);
@@ -645,40 +644,22 @@ export default function LandingPage() {
 
                       {/* Referral Source */}
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 tracking-wider uppercase mb-3">
-                          How did you hear about this workshop? <span className="text-[var(--color-brand)]">*</span>
+                        <label className="block text-xs font-semibold text-slate-400 tracking-wider uppercase mb-2">
+                          Enter your referral name <span className="text-slate-500 lowercase">(optional)</span>
                         </label>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                          {referralOptions.map((option) => (
-                            <label
-                              key={option}
-                              onClick={() => handleChange('referralSource', option)}
-                              className={`flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer transition-colors ${
-                                formData.referralSource === option
-                                  ? 'border-[var(--color-brand)] bg-[var(--color-brand)]/5'
-                                  : fieldHasError('referralSource')
-                                    ? 'border-red-500'
-                                    : 'border-slate-700 hover:border-slate-600'
-                              }`}
-                            >
-                              <div
-                                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                                  formData.referralSource === option
-                                    ? 'border-[var(--color-brand)]'
-                                    : 'border-slate-600'
-                                }`}
-                              >
-                                {formData.referralSource === option && (
-                                  <div className="w-2 h-2 rounded-full bg-[var(--color-brand)]" />
-                                )}
-                              </div>
-                              <span className="text-sm text-slate-300">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                        {fieldHasError('referralSource') && (
-                          <p className="text-red-500 text-xs mt-1.5">{step2Errors.referralSource}</p>
-                        )}
+                        <input
+                          type="text"
+                          placeholder="e.g. John Doe or LinkedIn..."
+                          value={formData.referralSource}
+                          onChange={(e) => handleChange('referralSource', e.target.value)}
+                          onFocus={() => setFocusedField('referralSource')}
+                          onBlur={() => setFocusedField(null)}
+                          className={`w-full bg-transparent border rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-[var(--color-brand)] transition-all ${
+                            focusedField === 'referralSource'
+                              ? 'border-[var(--color-brand)] shadow-[0_0_15px_rgba(212,175,55,0.1)]'
+                              : 'border-slate-700 hover:border-slate-600'
+                          }`}
+                        />
                       </div>
 
                        {/* Checkboxes */}
