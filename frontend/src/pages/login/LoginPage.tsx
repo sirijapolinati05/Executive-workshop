@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import { Mail, Lock, ArrowRight, Shield, User } from 'lucide-react';
 
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'admin@executiveworkshop.com';
 const ADMIN_ACCESS_CODE = import.meta.env.VITE_ADMIN_ACCESS_CODE || 'ADMIN2026';
 
 type Role = 'user' | 'admin';
@@ -20,15 +19,8 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  const [signUpCooldown, setSignUpCooldown] = useState<number | null>(null);
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Prevent rapid sign‑up attempts that exceed Supabase rate limits
-    if (signUpCooldown && Date.now() < signUpCooldown) {
-      setError('Please wait a moment before trying to sign up again due to rate limits.');
-      return;
-    }
     setLoading(true);
     setError('');
 
@@ -47,44 +39,24 @@ export default function LoginPage() {
           if (password !== confirmPassword) {
             throw new Error('Passwords do not match');
           }
-          // Sign up the user
-          const { error: signUpError } = await supabase.auth.signUp({
-            email,
-            password,
-          });
-          if (signUpError) {
-            if ((signUpError as any).status === 429) {
-              setSignUpCooldown(Date.now() + 60_000);
-            }
-            throw signUpError;
-          }
-          // Immediately sign in with the same credentials
-          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
-          if (signInError) throw signInError;
-          const loggedInEmail = signInData.user?.email || '';
-          const isAdmin = loggedInEmail === ADMIN_EMAIL;
-          if (isAdmin) {
-            navigate('/admin');
-          } else {
-            // Navigate to form with flag to auto‑open first step
-            navigate('/form?first=true');
-          }
+          
+          // Custom Sign Up: bypass Supabase auth and go directly to form
+          localStorage.setItem('userEmail', email);
+          navigate('/form?first=true');
         } else {
-          const { data, error: authError } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
-          if (authError) throw authError;
-          const loggedInEmail = data.user?.email || '';
-          const isAdmin = loggedInEmail === ADMIN_EMAIL;
-          if (isAdmin) {
-            navigate('/admin');
-          } else {
-            navigate('/form');
+          // Custom Sign In: check if email is in applicants table
+          const { data, error: fetchError } = await supabase
+            .from('applicants')
+            .select('email')
+            .eq('email', email)
+            .single();
+            
+          if (fetchError || !data) {
+            throw new Error('Invalid credentials or user not found. Please sign up if you do not have an account.');
           }
+          
+          localStorage.setItem('userEmail', email);
+          navigate('/form');
         }
       }
     } catch (e: any) {

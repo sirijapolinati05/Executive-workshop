@@ -52,6 +52,8 @@ export default function LandingPage() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('adminVerified');
     navigate('/login');
   };
   const [showForm, setShowForm] = useState(false);

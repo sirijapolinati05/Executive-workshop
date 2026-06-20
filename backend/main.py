@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 # Load .env safely
 try:
-    env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.env'))
+    env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend', '.env'))
     if os.path.exists(env_path):
         load_dotenv(dotenv_path=env_path)
     else:
@@ -40,7 +40,11 @@ app = FastAPI(title="Executive Workshop Email Service")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://executive-workshop.vercel.app", "https://executive-workshop-backend.vercel.app"],
+    allow_origins=[
+        "https://executive-workshop.vercel.app",
+        "https://executive-workshop-backend.vercel.app",
+        "http://localhost:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -165,27 +169,64 @@ async def api_admin_decision(payload: AdminDecisionPayload):
     if payload.decision == Decision.approved:
         subject = "🎉 Your Seat is Confirmed!"
         html = """
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:32px;
-                    background:#f9fafb;border-radius:12px;border:1px solid #e5e7eb;">
-          <h2 style="color:#059669;">🎉 Congratulations!</h2>
-          <p style="color:#374151;font-size:16px;">
-            Your seat for the <strong>Executive Workshop</strong> has been <strong>confirmed</strong>.
-          </p>
-          <p style="color:#374151;">We look forward to seeing you at the session. Payment instructions will follow shortly.</p>
-          <p style="color:#6b7280;font-size:13px;">Thank you for registering!</p>
-        </div>"""
+        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 40px auto; background-color: #0b0f1a; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.4); border: 1px solid #1e293b;">
+            <div style="background: linear-gradient(90deg, #101828 0%, #1e293b 100%); padding: 32px 40px; text-align: center; border-bottom: 1px solid #334155;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Executive Workshop</h1>
+                <p style="color: #94a3b8; font-size: 13px; margin: 8px 0 0 0; letter-spacing: 2px; text-transform: uppercase;">Curated Roundtables</p>
+            </div>
+            <div style="padding: 48px 40px; background-color: #0b0f1a;">
+                <h2 style="color: #10b981; margin: 0 0 20px 0; font-size: 22px; font-weight: 600;">🎉 Seat Confirmed</h2>
+                <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+                    Congratulations! Your application has been approved and your seat for the <strong style="color: #ffffff;">Executive Workshop</strong> has been officially confirmed.
+                </p>
+                <div style="background-color: #1e293b; border-left: 4px solid #10b981; padding: 20px; border-radius: 4px; margin-bottom: 24px;">
+                    <p style="color: #e2e8f0; font-size: 15px; line-height: 1.5; margin: 0;">
+                        We look forward to hosting you for an insightful session. Payment instructions and schedule details will follow in a separate communication.
+                    </p>
+                </div>
+                <p style="color: #94a3b8; font-size: 14px; margin: 0;">
+                    Best regards,<br>
+                    <span style="color: #cbd5e1; font-weight: 500;">The Executive Workshop Team</span>
+                </p>
+            </div>
+            <div style="background-color: #080b13; padding: 24px 40px; text-align: center; border-top: 1px solid #1e293b;">
+                <p style="color: #64748b; font-size: 12px; margin: 0;">
+                    © 2026 Executive Roundtables. All rights reserved.
+                </p>
+            </div>
+        </div>
+        """
     else:
         subject = "Update on Your Workshop Application"
         html = """
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:32px;
-                    background:#f9fafb;border-radius:12px;border:1px solid #e5e7eb;">
-          <h2 style="color:#dc2626;">Update on Your Application</h2>
-          <p style="color:#374151;font-size:16px;">
-            We regret to inform you that your seat request for the <strong>Executive Workshop</strong>
-            has been <strong>rejected</strong> at this time.
-          </p>
-          <p style="color:#6b7280;font-size:13px;">Thank you for your interest. We hope to see you in future sessions.</p>
-        </div>"""
+        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 40px auto; background-color: #0b0f1a; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.4); border: 1px solid #1e293b;">
+            <div style="background: linear-gradient(90deg, #101828 0%, #1e293b 100%); padding: 32px 40px; text-align: center; border-bottom: 1px solid #334155;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Executive Workshop</h1>
+                <p style="color: #94a3b8; font-size: 13px; margin: 8px 0 0 0; letter-spacing: 2px; text-transform: uppercase;">Curated Roundtables</p>
+            </div>
+            <div style="padding: 48px 40px; background-color: #0b0f1a;">
+                <h2 style="color: #f43f5e; margin: 0 0 20px 0; font-size: 22px; font-weight: 600;">Application Update</h2>
+                <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+                    Thank you for your interest in the <strong style="color: #ffffff;">Executive Workshop</strong>.
+                </p>
+                <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0 0 24px 0;">
+                    Due to the curated nature of our roundtables and limited seating, we regret to inform you that we cannot accommodate your request at this time. 
+                </p>
+                <p style="color: #94a3b8; font-size: 15px; line-height: 1.6; margin: 0 0 32px 0;">
+                    We appreciate your application and hope to welcome you to future sessions.
+                </p>
+                <p style="color: #94a3b8; font-size: 14px; margin: 0;">
+                    Best regards,<br>
+                    <span style="color: #cbd5e1; font-weight: 500;">The Executive Workshop Team</span>
+                </p>
+            </div>
+            <div style="background-color: #080b13; padding: 24px 40px; text-align: center; border-top: 1px solid #1e293b;">
+                <p style="color: #64748b; font-size: 12px; margin: 0;">
+                    © 2026 Executive Roundtables. All rights reserved.
+                </p>
+            </div>
+        </div>
+        """
 
     ok, via_or_err = send_email(payload.to, subject, html)
     if not ok:
