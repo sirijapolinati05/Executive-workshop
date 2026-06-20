@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Shield, Lock, Database, FileSpreadsheet, Search, Check, X, Phone, Mail, RefreshCw, Trash2 } from 'lucide-react';
+import { Shield, Lock, FileSpreadsheet, Search, Check, X, Phone, Mail, RefreshCw, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import logo from '../../assets/logo.jpeg';

@@ -38,14 +38,7 @@ const experienceOptions = [
   '30+ years',
 ];
 
-const referralOptions = [
-  'Personal invitation',
-  'WhatsApp',
-  'Email',
-  'LinkedIn',
-  'Referral',
-  'Other',
-];
+
 
 export default function LandingPage() {
   const navigate = useNavigate();
