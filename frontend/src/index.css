@@ -1,23 +1,45 @@
+@font-face {
+  font-family: 'Iosevka Charon';
+  src: url('./assets/Iosevka_Charon/IosevkaCharon-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Iosevka Charon';
+  src: url('./assets/Iosevka_Charon/IosevkaCharon-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Iosevka Charon';
+  src: url('./assets/Iosevka_Charon/IosevkaCharon-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Iosevka Charon';
+  src: url('./assets/Iosevka_Charon/IosevkaCharon-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
 @import "tailwindcss";
 
 @theme {
-  --color-brand: #d4a843; /* original yellow-500 */
-  --color-brand-hover: #c99b35; /* original yellow-600 */
-  --color-brand-light: #f5d98a; /* original yellow-300 */
-  --color-bg-dark: #0b0f1a;
-  --color-bg-card: #111827;
-  --color-bg-card-border: #1e293b;
-  --color-text-muted: #9ca3af;
+  --color-brand: #d4a843;
+  --color-brand-hover: #b08830;
+  --color-brand-light: #e6c165;
+  --color-bg-dark: #050505;
+  --color-bg-card: #0a0a0a;
+  --color-bg-card-border: #1f1f1f;
+  --color-text-muted: #888888;
 }
 
 @layer base {
   body {
     background-color: var(--color-bg-dark);
     color: white;
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-
-  .font-serif {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Iosevka Charon', monospace;
+    letter-spacing: -0.02em;
   }
 }

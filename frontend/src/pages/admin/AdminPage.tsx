@@ -90,14 +90,30 @@ export default function AdminPage() {
 
   const sendStatusEmail = async (applicant: Applicant, newStatus: 'Approved' | 'Rejected') => {
     // Send email to applicant via FastAPI Gmail SMTP backend
-    const subject = newStatus === 'Approved' ? '🎉 Your Seat is Confirmed!' : 'Update on Your Workshop Application';
+    const subject = newStatus === 'Approved' ? 'Your Registration is Confirmed' : 'Update on Your Workshop Application';
     const html = newStatus === 'Approved'
       ? `
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:32px;background:#f9fafb;border-radius:12px;">
-          <h2 style="color:#059669;">🎉 Congratulations, ${applicant.name}!</h2>
-          <p style="color:#374151;font-size:16px;">Your seat for the <strong>Executive Workshop</strong> has been <strong>confirmed</strong>.</p>
-          <p style="color:#374151;">We look forward to seeing you at the session. More details will follow soon.</p>
-          <p style="color:#6b7280;font-size:14px;">Thank you for registering!</p>
+        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: auto; padding: 40px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; color: #1f2937;">
+          <p style="font-size: 16px; margin-bottom: 16px;">Dear ${applicant.name},</p>
+          <p style="font-size: 16px; margin-bottom: 24px; line-height: 1.6;">Thank you for registering for <strong>The Leadership Blind-Spot: The Hidden Cost of Bad Decisions</strong>.</p>
+          <p style="font-size: 16px; margin-bottom: 24px; line-height: 1.6;">We are pleased to confirm your participation in the workshop. Please find the payment details below:</p>
+          
+          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+            <table style="width: 100%; font-size: 15px; border-collapse: collapse;">
+              <tr><td style="padding: 6px 0; color: #64748b; width: 40%;">Bank Name:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">Axis Bank</td></tr>
+              <tr><td style="padding: 6px 0; color: #64748b;">Account Name:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">Tejas Events</td></tr>
+              <tr><td style="padding: 6px 0; color: #64748b;">Account Number:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">923020047638503</td></tr>
+              <tr><td style="padding: 6px 0; color: #64748b;">IFSC Code:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">UTIB0000425</td></tr>
+              <tr><td style="padding: 6px 0; color: #64748b;">UPI ID:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;"></td></tr>
+              <tr><td style="padding: 6px 0; color: #64748b;">Program Fee:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">₹7,500 + 18% GST</td></tr>
+              <tr><td style="padding: 6px 0; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 6px;">Total amount:</td><td style="padding: 6px 0; font-weight: 700; color: #0f172a; border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 6px; font-size: 16px;">₹8850</td></tr>
+            </table>
+          </div>
+          
+          <p style="font-size: 16px; margin-bottom: 24px; line-height: 1.6;">Kindly complete the payment at your earliest convenience and share the payment confirmation with us once done.</p>
+          <p style="font-size: 16px; margin-bottom: 32px; line-height: 1.6;">We look forward to welcoming you to the session.</p>
+          
+          <p style="font-size: 16px; margin-bottom: 0; color: #475569;">Warm regards,<br/><strong style="color: #1f2937;">Rajesh</strong></p>
         </div>
       `
       : `

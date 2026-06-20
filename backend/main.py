@@ -5,6 +5,7 @@ import urllib.request
 import urllib.error
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
 from typing import Optional, Tuple
 
 from dotenv import load_dotenv
@@ -68,17 +69,31 @@ class AdminDecisionPayload(BaseModel):
 
 # ── Senders ───────────────────────────────────────────────────────
 
-def send_via_resend(to: str, subject: str, html: str) -> Tuple[bool, Optional[str]]:
+def send_via_resend(to: str, subject: str, html: str, inline_image_path: str = None) -> Tuple[bool, Optional[str]]:
     """Send email using Resend REST API (no extra packages needed)."""
     if not RESEND_API_KEY or RESEND_API_KEY.startswith('re_PASTE'):
         return False, "Resend API key not configured"
     try:
-        payload = json.dumps({
+        data = {
             "from": RESEND_FROM,
             "to": [to],
             "subject": subject,
             "html": html,
-        }).encode("utf-8")
+        }
+        
+        if inline_image_path and os.path.exists(inline_image_path):
+            import base64
+            with open(inline_image_path, "rb") as img_file:
+                b64_content = base64.b64encode(img_file.read()).decode("utf-8")
+            data["attachments"] = [
+                {
+                    "filename": "scanner.jpeg",
+                    "content": b64_content,
+                    "content_id": "scanner_img"
+                }
+            ]
+
+        payload = json.dumps(data).encode("utf-8")
 
         req = urllib.request.Request(
             "https://api.resend.com/emails",
@@ -103,16 +118,34 @@ def send_via_resend(to: str, subject: str, html: str) -> Tuple[bool, Optional[st
         return False, str(exc)
 
 
-def send_via_smtp(to: str, subject: str, html: str) -> Tuple[bool, Optional[str]]:
+def send_via_smtp(to: str, subject: str, html: str, inline_image_path: str = None) -> Tuple[bool, Optional[str]]:
     """Send email using SMTP over SSL (port 465)."""
     if not SMTP_USER or not SMTP_PASSWORD:
         return False, "SMTP credentials not configured"
     try:
-        msg = MIMEMultipart("alternative")
+        msg = MIMEMultipart("related")
         msg["Subject"] = subject
         msg["From"]    = f"Executive Workshop <{SMTP_USER}>"
         msg["To"]      = to
-        msg.attach(MIMEText(html, "html"))
+        
+        alt = MIMEMultipart("alternative")
+        msg.attach(alt)
+        alt.attach(MIMEText(html, "html"))
+        
+        if inline_image_path and os.path.exists(inline_image_path):
+            with open(inline_image_path, "rb") as img_file:
+                img_data = img_file.read()
+                
+                # Inline image for HTML tag
+                img_inline = MIMEImage(img_data)
+                img_inline.add_header("Content-ID", "<scanner_img>")
+                img_inline.add_header("Content-Disposition", "inline", filename="scanner.jpeg")
+                msg.attach(img_inline)
+                
+                # Standard attachment as fallback
+                img_attach = MIMEImage(img_data)
+                img_attach.add_header("Content-Disposition", "attachment", filename="QR_Scanner_To_Pay.jpeg")
+                msg.attach(img_attach)
 
         with smtplib.SMTP_SSL(SMTP_HOST, 465) as server:
             server.login(SMTP_USER, SMTP_PASSWORD)
@@ -125,7 +158,7 @@ def send_via_smtp(to: str, subject: str, html: str) -> Tuple[bool, Optional[str]
         return False, str(exc)
 
 
-def send_email(to: str, subject: str, html: str) -> Tuple[bool, str]:
+def send_email(to: str, subject: str, html: str, inline_image_path: str = None) -> Tuple[bool, str]:
     """
     Route email based on EMAIL_PROVIDER:
       resend → Resend only
@@ -135,13 +168,13 @@ def send_email(to: str, subject: str, html: str) -> Tuple[bool, str]:
     errors: list[str] = []
 
     if EMAIL_PROVIDER in ("resend", "both"):
-        ok, err = send_via_resend(to, subject, html)
+        ok, err = send_via_resend(to, subject, html, inline_image_path)
         if ok:
             return True, "resend"
         errors.append(f"Resend: {err}")
 
     if EMAIL_PROVIDER in ("smtp", "both"):
-        ok, err = send_via_smtp(to, subject, html)
+        ok, err = send_via_smtp(to, subject, html, inline_image_path)
         if ok:
             return True, "smtp"
         errors.append(f"SMTP: {err}")
@@ -169,71 +202,47 @@ async def api_send_email(payload: EmailPayload):
 @app.post("/admin-decision")
 async def api_admin_decision(payload: AdminDecisionPayload):
     if payload.decision == Decision.approved:
-        subject = "🎉 Your Seat is Confirmed!"
-        html = """
-        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 40px auto; background-color: #0b0f1a; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.4); border: 1px solid #1e293b;">
-            <div style="background: linear-gradient(90deg, #101828 0%, #1e293b 100%); padding: 32px 40px; text-align: center; border-bottom: 1px solid #334155;">
-                <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Executive Workshop</h1>
-                <p style="color: #94a3b8; font-size: 13px; margin: 8px 0 0 0; letter-spacing: 2px; text-transform: uppercase;">Curated Roundtables</p>
-            </div>
-            <div style="padding: 48px 40px; background-color: #0b0f1a;">
-                <h2 style="color: #10b981; margin: 0 0 20px 0; font-size: 22px; font-weight: 600;">🎉 Seat Confirmed</h2>
-                <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
-                    Congratulations! Your application has been approved and your seat for the <strong style="color: #ffffff;">Executive Workshop</strong> has been officially confirmed.
-                </p>
-                <div style="background-color: #1e293b; border-left: 4px solid #10b981; padding: 20px; border-radius: 4px; margin-bottom: 24px;">
-                    <p style="color: #e2e8f0; font-size: 15px; line-height: 1.5; margin: 0;">
-                        We look forward to hosting you for an insightful session. Payment instructions and schedule details will follow in a separate communication.
-                    </p>
-                </div>
-                <p style="color: #94a3b8; font-size: 14px; margin: 0;">
-                    Best regards,<br>
-                    <span style="color: #cbd5e1; font-weight: 500;">The Executive Workshop Team</span>
-                </p>
-            </div>
-            <div style="background-color: #080b13; padding: 24px 40px; text-align: center; border-top: 1px solid #1e293b;">
-                <p style="color: #64748b; font-size: 12px; margin: 0;">
-                    © 2026 Executive Roundtables. All rights reserved.
-                </p>
-            </div>
-        </div>
-        """
-    else:
-        subject = "Update on Your Workshop Application"
-        html = """
-        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 40px auto; background-color: #0b0f1a; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.4); border: 1px solid #1e293b;">
-            <div style="background: linear-gradient(90deg, #101828 0%, #1e293b 100%); padding: 32px 40px; text-align: center; border-bottom: 1px solid #334155;">
-                <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Executive Workshop</h1>
-                <p style="color: #94a3b8; font-size: 13px; margin: 8px 0 0 0; letter-spacing: 2px; text-transform: uppercase;">Curated Roundtables</p>
-            </div>
-            <div style="padding: 48px 40px; background-color: #0b0f1a;">
-                <h2 style="color: #f43f5e; margin: 0 0 20px 0; font-size: 22px; font-weight: 600;">Application Update</h2>
-                <p style="color: #e2e8f0; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
-                    Thank you for your interest in the <strong style="color: #ffffff;">Executive Workshop</strong>.
-                </p>
-                <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0 0 24px 0;">
-                    Due to the curated nature of our roundtables and limited seating, we regret to inform you that we cannot accommodate your request at this time. 
-                </p>
-                <p style="color: #94a3b8; font-size: 15px; line-height: 1.6; margin: 0 0 32px 0;">
-                    We appreciate your application and hope to welcome you to future sessions.
-                </p>
-                <p style="color: #94a3b8; font-size: 14px; margin: 0;">
-                    Best regards,<br>
-                    <span style="color: #cbd5e1; font-weight: 500;">The Executive Workshop Team</span>
-                </p>
-            </div>
-            <div style="background-color: #080b13; padding: 24px 40px; text-align: center; border-top: 1px solid #1e293b;">
-                <p style="color: #64748b; font-size: 12px; margin: 0;">
-                    © 2026 Executive Roundtables. All rights reserved.
-                </p>
-            </div>
-        </div>
-        """
+        subject = "Your Registration is Confirmed"
+        import os
+        scanner_path = os.path.join(os.path.dirname(__file__), "../frontend/src/assets/scanner.jpeg")
 
-    ok, via_or_err = send_email(payload.to, subject, html)
-    if not ok:
-        raise HTTPException(status_code=500, detail=f"All providers failed: {via_or_err}")
-    return {"message": f"Decision email sent via {via_or_err}", "decision": payload.decision}
+        html = f"""
+        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: auto; padding: 40px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 16px; color: #1f2937;">
+            <p style="font-size: 16px; margin-bottom: 16px;">Dear Participant,</p>
+            <p style="font-size: 16px; margin-bottom: 24px; line-height: 1.6;">Thank you for registering for <strong>The Leadership Blind-Spot: The Hidden Cost of Bad Decisions</strong>.</p>
+            <p style="font-size: 16px; margin-bottom: 24px; line-height: 1.6;">We are pleased to confirm your participation in the workshop. Please find the payment details below:</p>
+            
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+                <table style="width: 100%; font-size: 15px; border-collapse: collapse;">
+                    <tr><td style="padding: 6px 0; color: #64748b; width: 40%;">Bank Name:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">Axis Bank</td></tr>
+                    <tr><td style="padding: 6px 0; color: #64748b;">Account Name:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">Tejas Events</td></tr>
+                    <tr><td style="padding: 6px 0; color: #64748b;">Account Number:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">923020047638503</td></tr>
+                    <tr><td style="padding: 6px 0; color: #64748b;">IFSC Code:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">UTIB0000425</td></tr>
+                    <tr><td style="padding: 6px 0; color: #64748b;">UPI ID:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;"></td></tr>
+                    <tr><td style="padding: 6px 0; color: #64748b;">Program Fee:</td><td style="padding: 6px 0; font-weight: 600; color: #0f172a;">₹7,500 + 18% GST</td></tr>
+                    <tr><td style="padding: 6px 0; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 6px;">Total amount:</td><td style="padding: 6px 0; font-weight: 700; color: #0f172a; border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 6px; font-size: 16px;">₹8850</td></tr>
+                </table>
+            </div>
+            
+            <p style="font-size: 16px; margin-bottom: 24px; line-height: 1.6;">Kindly complete the payment at your earliest convenience and share the payment confirmation with us once done.</p>
+            
+            <div style="text-align: center; margin: 32px 0;">
+                <p style="font-size: 15px; color: #475569; margin-bottom: 16px; font-weight: 600;">Scan to Pay via UPI:</p>
+                <img src="cid:scanner_img" alt="UPI Scanner" style="max-width: 220px; height: auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; background-color: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" />
+            </div>
+
+            <p style="font-size: 16px; margin-bottom: 32px; line-height: 1.6;">We look forward to welcoming you to the session.</p>
+            
+            <p style="font-size: 16px; margin-bottom: 0; color: #475569;">Warm regards,<br/><strong style="color: #1f2937;">Rajesh</strong></p>
+        </div>
+        """
+        ok, via_or_err = send_email(payload.to, subject, html, scanner_path)
+        if not ok:
+            raise HTTPException(status_code=500, detail=f"All providers failed: {via_or_err}")
+        return {"message": f"Decision email sent via {via_or_err}", "decision": payload.decision}
+    else:
+        # User requested NO emails except for 'approved'.
+        return {"message": "Application rejected. No email sent.", "decision": payload.decision}
 
 if __name__ == "__main__":
     import uvicorn

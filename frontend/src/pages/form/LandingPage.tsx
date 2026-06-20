@@ -184,54 +184,6 @@ export default function LandingPage() {
         console.error('Failed to reach FastAPI email server for admin notification:', emailError);
       }
 
-      // Send acknowledgement email to the applicant
-      try {
-        const backendUrl2 = import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL;
-        const res = await fetch(`${backendUrl2}/send-email`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: formData.email,
-            subject: `✅ We received your registration, ${formData.fullName}!`,
-            html: `
-              <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:40px 32px;background:#f9fafb;border-radius:12px;border:1px solid #e5e7eb;">
-                <h2 style="color:#1f2937;margin-bottom:6px;">Thank you for registering!</h2>
-                <p style="color:#6b7280;font-size:13px;margin-top:0;">Executive Leadership Workshop — Seat Application Received</p>
-                <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
-                <p style="color:#374151;font-size:15px;">Dear <strong>${formData.fullName}</strong>,</p>
-                <p style="color:#374151;font-size:15px;line-height:1.7;">Your application has been received and is currently <strong style="color:#d97706;">under review</strong>.</p>
-                <p style="color:#374151;font-size:15px;line-height:1.7;">We will notify you via email once your seat is <strong>approved</strong> or if it is <strong>rejected</strong>.</p>
-                </p>
-
-                <div style="margin:28px 0;padding:20px 24px;background:#fff;border-radius:8px;border:1px solid #e5e7eb;">
-                  <p style="margin:0 0 6px;color:#6b7280;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Your Application Summary</p>
-                  <table style="width:100%;border-collapse:collapse;font-size:14px;">
-                    <tr><td style="padding:5px 0;color:#6b7280;width:40%;">Name</td><td style="padding:5px 0;color:#111827;font-weight:600;">${formData.fullName}</td></tr>
-                    <tr><td style="padding:5px 0;color:#6b7280;">Organization</td><td style="padding:5px 0;color:#111827;">${formData.organization}</td></tr>
-                    <tr><td style="padding:5px 0;color:#6b7280;">Role</td><td style="padding:5px 0;color:#111827;">${formData.currentRole}</td></tr>
-                    <tr><td style="padding:5px 0;color:#6b7280;">Industry</td><td style="padding:5px 0;color:#111827;">${formData.industry}</td></tr>
-                    <tr><td style="padding:5px 0;color:#6b7280;">Experience</td><td style="padding:5px 0;color:#111827;">${formData.experience}</td></tr>
-                  </table>
-                </div>
-
-                <p style="color:#6b7280;font-size:13px;line-height:1.6;">
-                  ℹ️ This is an <strong>invitation-only</strong> workshop. Payment instructions (₹7,500 + GST)
-                  will be shared only after your seat is formally confirmed.
-                </p>
-                <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
-                <p style="color:#9ca3af;font-size:12px;">© 2026 Executive Roundtables. All rights reserved.</p>
-              </div>
-            `,
-          }),
-        });
-        if (!res.ok) {
-          console.error('Applicant acknowledgement email failed:', await res.text());
-        } else {
-          console.log(`✅ Acknowledgement sent to ${formData.email}`);
-        }
-      } catch (emailError) {
-        console.error('Failed to send applicant acknowledgement:', emailError);
-      }
 
       setSubmitted(true);
     } catch (err: any) {
@@ -244,33 +196,33 @@ export default function LandingPage() {
   const fieldHasError = (field: string) => !!step1Errors[field];
 
   const inputClass = (field: string) =>
-    `w-full bg-transparent border ${
+    `w-full bg-[#050505] border ${
       fieldHasError(field)
-        ? 'border-red-500'
+        ? 'border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]'
         : focusedField === field
-          ? 'border-[var(--color-brand)]'
-          : 'border-slate-700'
-    } rounded-lg px-4 py-3 pl-11 text-white placeholder-slate-500 text-sm outline-none transition-colors`;
+          ? 'border-[#d4a843] shadow-[4px_4px_0_rgba(212,168,67,0.4)]'
+          : 'border-white/10 hover:border-white/20'
+    } rounded-none px-4 py-3.5 pl-11 text-white placeholder-slate-500 text-sm outline-none transition-all duration-300 backdrop-blur-md`;
 
   const selectClass = (field: string) =>
-  `w-full bg-transparent border ${
+  `w-full bg-[#050505] border ${
     fieldHasError(field)
-      ? 'border-red-500'
+      ? 'border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]'
       : focusedField === field
-        ? 'border-[var(--color-brand)]'
-        : 'border-slate-700'
-  } rounded-lg px-4 py-3 pl-11 text-white text-sm outline-none transition-colors appearance-none cursor-pointer ${
+        ? 'border-[#d4a843] shadow-[4px_4px_0_rgba(212,168,67,0.4)]'
+        : 'border-white/10 hover:border-white/20'
+  } rounded-none px-4 py-3.5 pl-11 text-white text-sm outline-none transition-all duration-300 appearance-none cursor-pointer backdrop-blur-md ${
     !formData[field as keyof FormData] ? 'text-slate-500' : ''
   }`;
 
   const textareaClass = (field: string) =>
-    `w-full bg-transparent border ${
+    `w-full bg-[#050505] border ${
       fieldHasError(field)
-        ? 'border-red-500'
+        ? 'border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]'
         : focusedField === field
-          ? 'border-[var(--color-brand)]'
-          : 'border-slate-700'
-    } rounded-lg px-4 py-3 text-white placeholder-slate-500 text-sm outline-none transition-colors resize-none`;
+          ? 'border-[#d4a843] shadow-[4px_4px_0_rgba(212,168,67,0.4)]'
+          : 'border-white/10 hover:border-white/20'
+    } rounded-none px-4 py-3.5 text-white placeholder-slate-500 text-sm outline-none transition-all duration-300 resize-none backdrop-blur-md`;
 
   return (
     <>
@@ -304,7 +256,7 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <div className="border border-slate-700 rounded-xl px-8 py-5 min-w-[180px]">
+            <div className="border border-slate-700 rounded-none px-8 py-5 min-w-[180px]">
               <div className="text-slate-500 text-xs font-semibold tracking-widest uppercase mb-1">
                 Program Fee
               </div>
@@ -312,7 +264,7 @@ export default function LandingPage() {
                 ₹7,500 <span className="text-slate-500 text-sm font-normal">+ GST</span>
               </div>
             </div>
-            <div className="border border-slate-700 rounded-xl px-8 py-5 min-w-[180px]">
+            <div className="border border-slate-700 rounded-none px-8 py-5 min-w-[180px]">
               <div className="text-slate-500 text-xs font-semibold tracking-widest uppercase mb-1">
                 Duration
               </div>
@@ -328,14 +280,14 @@ export default function LandingPage() {
                   document.getElementById('registration-form')?.scrollIntoView({ behavior: 'smooth' });
                 }, 100);
               }}
-              className="flex items-center gap-2 px-8 py-4 bg-[var(--color-brand)] hover:bg-[var(--color-brand-hover)] text-[var(--color-bg-dark)] font-semibold text-base rounded-xl transition-colors mx-auto"
+              className="flex items-center gap-2 px-8 py-4 bg-[var(--color-brand)] hover:bg-[var(--color-brand-hover)] text-[var(--color-bg-dark)] font-semibold text-base rounded-none transition-colors mx-auto"
             >
               Register for Workshop
               <ChevronDown size={18} />
             </button>
           </div>
 
-          <div className="flex items-start gap-3 max-w-xl mx-auto bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-left">
+          <div className="flex items-start gap-3 max-w-xl mx-auto bg-[#111] border-b-2 border-[#d4a843] border border-slate-700/50 rounded-none p-4 text-left">
             <Info size={18} className="text-[var(--color-brand)] mt-0.5 shrink-0" />
             <p className="text-slate-400 text-sm leading-relaxed">
               Registrations will be reviewed, and confirmed participation will be communicated based on seat availability.
@@ -347,12 +299,15 @@ export default function LandingPage() {
 
       {/* Registration Form Section */}
       {showForm && (
-        <div id="registration-form" className="px-4 pb-20">
-          <div className="w-full max-w-2xl mx-auto">
-            <div className="bg-[#111827] border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+        <div id="registration-form" className="px-4 pb-20 relative">
+          
+          
+
+          <div className="w-full max-w-2xl mx-auto relative z-10">
+            <div className="bg-[#0a0a0a] border-2 border-[#d4a843] rounded-none overflow-hidden shadow-[8px_8px_0_rgba(212,168,67,0.2)]">
               {/* Progress bar */}
-              <div className="h-1 bg-slate-800">
-                <div className={`h-full transition-all duration-300 ${currentStep === 1 ? 'w-1/2' : 'w-full'}`} />
+              <div className="h-1.5 bg-[#111] border-b-2 border-[#d4a843]">
+                <div className={`h-full bg-[#d4a843] transition-all duration-500 ease-out ${currentStep === 1 ? 'w-1/2' : 'w-full'}`} />
               </div>
 
               <div className="p-8 md:p-10">
@@ -377,7 +332,7 @@ export default function LandingPage() {
                           challengingDecision: '', referralSource: '', agreeTerms: false, agreeFee: false,
                         });
                       }}
-                      className="px-6 py-3 border border-slate-700 text-white hover:bg-slate-800 font-semibold text-sm rounded-xl transition-colors"
+                      className="px-6 py-3 border border-slate-700 text-white hover:bg-slate-800 font-semibold text-sm rounded-none transition-colors"
                     >
                       Back to Home
                     </button>
@@ -387,16 +342,17 @@ export default function LandingPage() {
                 {currentStep === 1 ? (
                   <>
                     {/* Step 1 */}
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[var(--color-brand)] text-xs font-semibold tracking-widest uppercase">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-[#d4a843] text-xs font-bold tracking-widest uppercase flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-[#d4a843] animate-pulse"></span>
                         Step 1 of 2: Professional Profile
                       </span>
-                      <span className="text-slate-500 text-xs border border-slate-700 rounded px-2 py-0.5">
+                      <span className="text-slate-400 text-xs font-medium bg-black border border-[#d4a843] rounded-none text-[#d4a843] px-3 py-1">
                         1/2
                       </span>
                     </div>
 
-                    <h2 className="text-2xl font-bold text-white mb-8">Tell us about yourself</h2>
+                    <h2 className="text-3xl font-bold text-[#d4a843] uppercase tracking-widest mb-8">Tell us about yourself</h2>
 
                     <div className="space-y-5">
                       {/* Full Name */}
@@ -567,7 +523,7 @@ export default function LandingPage() {
                     </div>
 
                     {/* Continue button */}
-                    <div className="mt-8 flex justify-end">
+                    <div className="mt-10 flex justify-end">
                       <button
                         onClick={() => {
                           if (validateStep1()) {
@@ -575,7 +531,7 @@ export default function LandingPage() {
                             document.getElementById('registration-form')?.scrollIntoView({ behavior: 'smooth' });
                           }
                         }}
-                        className="flex items-center gap-2 px-8 py-3.5 bg-[var(--color-brand)] hover:bg-[var(--color-brand-hover)] text-[var(--color-bg-dark)] font-semibold text-sm rounded-xl transition-colors"
+                        className="flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold text-sm rounded-none transition-all duration-300 shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] hover:-translate-y-0.5"
                       >
                         Continue to Insights
                         <ArrowRight size={16} />
@@ -585,16 +541,17 @@ export default function LandingPage() {
                 ) : (
                   <>
                     {/* Step 2 */}
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[var(--color-brand)] text-xs font-semibold tracking-widest uppercase">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-[#d4a843] text-xs font-bold tracking-widest uppercase flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-[#d4a843] animate-pulse"></span>
                         Step 2 of 2: Workshop Insights
                       </span>
-                      <span className="text-slate-500 text-xs border border-slate-700 rounded px-2 py-0.5">
+                      <span className="text-slate-400 text-xs font-medium bg-black border border-[#d4a843] rounded-none text-[#d4a843] px-3 py-1">
                         2/2
                       </span>
                     </div>
 
-                    <h2 className="text-2xl font-bold text-white mb-8">Share your thoughts</h2>
+                    <h2 className="text-3xl font-bold text-[#d4a843] uppercase tracking-widest mb-8">Share your thoughts</h2>
 
                     <div className="space-y-6">
                       {/* Interests */}
@@ -657,30 +614,30 @@ export default function LandingPage() {
 
                        {/* Checkboxes */}
                       <div className="space-y-3 pt-2">
-                        <label className="flex items-start gap-3 p-4 rounded-lg border border-slate-700 cursor-pointer hover:border-slate-600 transition-colors">
+                        <label className="flex items-start gap-3 p-4 rounded-none border border-white/5 bg-[#050505] border-2 border-[#333] cursor-pointer hover:bg-[#111] hover:border-[#d4a843] transition-all duration-100 rounded-none">
                           <input
                             type="checkbox"
                             checked={formData.agreeTerms}
                             onChange={(e) => handleChange('agreeTerms', e.target.checked)}
-                            className="mt-0.5 w-4 h-4 rounded border-slate-600 bg-transparent text-[var(--color-brand)] focus:ring-[var(--color-brand)] focus:ring-offset-0 accent-[var(--color-brand)]"
+                            className="mt-0.5 w-4 h-4 rounded border-slate-600 bg-transparent text-[#d4a843] focus:ring-[#d4a843] focus:ring-offset-0 accent-[#d4a843] rounded-none"
                           />
                           <span className="text-sm text-slate-300 leading-relaxed">
-                            I understand that this is a curated, registration-based workshop and that submission of this form does not automatically confirm my seat. <span className="text-[var(--color-brand)]">*</span>
+                            I understand that this is a curated, registration-based workshop and that submission of this form does not automatically confirm my seat. <span className="text-[#d4a843]">*</span>
                           </span>
                         </label>
                         {fieldHasError('agreeTerms') && (
                           <p className="text-red-500 text-xs">{step2Errors.agreeTerms}</p>
                         )}
 
-                        <label className="flex items-start gap-3 p-4 rounded-lg border border-slate-700 cursor-pointer hover:border-slate-600 transition-colors">
+                        <label className="flex items-start gap-3 p-4 rounded-none border border-white/5 bg-[#050505] border-2 border-[#333] cursor-pointer hover:bg-[#111] hover:border-[#d4a843] transition-all duration-100 rounded-none">
                           <input
                             type="checkbox"
                             checked={formData.agreeFee}
                             onChange={(e) => handleChange('agreeFee', e.target.checked)}
-                            className="mt-0.5 w-4 h-4 rounded border-slate-600 bg-transparent text-[var(--color-brand)] focus:ring-[var(--color-brand)] focus:ring-offset-0 accent-[var(--color-brand)]"
+                            className="mt-0.5 w-4 h-4 rounded border-slate-600 bg-transparent text-[#d4a843] focus:ring-[#d4a843] focus:ring-offset-0 accent-[#d4a843] rounded-none"
                           />
                           <span className="text-sm text-slate-300 leading-relaxed">
-                            I understand that the participation fee is ₹7,500 + GST, payable upon confirmation. <span className="text-[var(--color-brand)]">*</span>
+                            I understand that the participation fee is ₹7,500 + GST, payable upon confirmation. <span className="text-[#d4a843]">*</span>
                           </span>
                         </label>
                         {fieldHasError('agreeFee') && (
@@ -690,13 +647,13 @@ export default function LandingPage() {
                     </div>
 
                     {/* Back + Register buttons */}
-                    <div className="mt-8 flex items-center justify-between">
+                    <div className="mt-10 flex items-center justify-between">
                       <button
                         onClick={() => {
                           setCurrentStep(1);
                           document.getElementById('registration-form')?.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        className="flex items-center gap-2 px-6 py-3.5 border border-slate-700 text-white hover:bg-slate-800 font-semibold text-sm rounded-xl transition-colors"
+                        className="flex items-center gap-2 px-6 py-3.5 border border-white/10 text-white hover:bg-white/5 font-semibold text-sm rounded-none transition-all duration-300 backdrop-blur-sm"
                       >
                         <ArrowLeft size={16} />
                         Back
@@ -704,7 +661,7 @@ export default function LandingPage() {
                       <button
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="flex items-center gap-2 px-8 py-3.5 bg-[var(--color-brand)] hover:bg-[var(--color-brand-hover)] text-[var(--color-bg-dark)] font-semibold text-sm rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold text-sm rounded-none transition-all duration-300 shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
                       >
                         {isSubmitting ? 'Submitting...' : 'Register for Workshop'}
                         <Send size={16} />
